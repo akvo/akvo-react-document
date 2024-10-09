@@ -1,2 +1,2 @@
-# akvo-react-document
-A react library that allows easy pdf generation or printing from components
+# Akvo React Document
+Akvo React Document is an npm library designed for React applications, enabling developers to easily generate PDF documents or print content directly from React components. The library offers a simple and flexible API to convert dynamic, styled components into high-quality PDFs or trigger the browser's print functionality, streamlining the process of creating downloadable or printable reports, invoices, or any other document-based output in React apps.
