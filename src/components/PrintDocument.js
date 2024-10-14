@@ -41,7 +41,10 @@ const PrintDocument = ({ children, id = 'ardoc-print-iframe' }) => {
             onClick: (event) => {
               if (originalOnClick) {
                 // Ensure compatibility with both sync and async functions
-                const result = originalOnClick(() => onPrint(), event);
+                const result = originalOnClick(
+                  (props) => onPrint(props),
+                  event
+                );
 
                 // If the original function is asynchronous, wait for it
                 Promise.resolve(result).then(() => {
