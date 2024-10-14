@@ -30912,7 +30912,9 @@ if (process.env.NODE_ENV === 'production') {
 var handleBrowsers = ['firefox'];
 var IFrame = function IFrame(_ref) {
   var _ref$contentDocument, _ref$contentDocument2;
-  var children = _ref.children;
+  var children = _ref.children,
+    _ref$htmlID = _ref.htmlID,
+    htmlID = _ref$htmlID === void 0 ? 'ardoc-print-iframe' : _ref$htmlID;
   var _useState = useState(false),
     isBraveBrowser = _useState[0],
     setIsBraveBrowser = _useState[1];
@@ -30976,7 +30978,7 @@ var IFrame = function IFrame(_ref) {
   };
   if (handleBrowsers.includes(browser) && !isBraveBrowser) {
     return /*#__PURE__*/React.createElement("iframe", {
-      id: "ardoc-print-iframe",
+      id: htmlID,
       title: Math.random(),
       width: 0,
       height: 0,
@@ -30985,7 +30987,7 @@ var IFrame = function IFrame(_ref) {
     }, iframeBody && reactDom.createPortal(children, iframeBody));
   }
   return /*#__PURE__*/React.createElement("iframe", {
-    id: "ardoc-print-iframe",
+    id: htmlID,
     ref: setRef,
     title: Math.random(),
     width: 0,
@@ -31001,7 +31003,9 @@ var todayDate = function todayDate() {
 };
 
 var _PrintDocument = function PrintDocument(_ref) {
-  var children = _ref.children;
+  var children = _ref.children,
+    _ref$id = _ref.id,
+    id = _ref$id === void 0 ? 'ardoc-print-iframe' : _ref$id;
   var _useState = useState(false),
     isPrint = _useState[0],
     setIsPrint = _useState[1];
@@ -31009,7 +31013,7 @@ var _PrintDocument = function PrintDocument(_ref) {
     var originalDocTitle = document.title;
     setIsPrint(true);
     setTimeout(function () {
-      var print = document.getElementById('ardoc-print-iframe');
+      var print = document.getElementById(id);
       if (print) {
         var title = fileName || v4() + "_" + todayDate();
         print.contentDocument.title = title;
@@ -31043,11 +31047,87 @@ var _PrintDocument = function PrintDocument(_ref) {
         }
       });
     }
+    if (React.isValidElement(child) && child.type === _PrintDocument.Area) {
+      if (!isPrint) {
+        return null;
+      }
+      return React.cloneElement(child, {
+        htmlID: id
+      });
+    }
     return child;
   }));
 };
 _PrintDocument.Button = Button;
 _PrintDocument.Area = IFrame;
 
-export { _PrintDocument as PrintDocument };
+function _extends() {
+  return _extends = Object.assign ? Object.assign.bind() : function (n) {
+    for (var e = 1; e < arguments.length; e++) {
+      var t = arguments[e];
+      for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+    }
+    return n;
+  }, _extends.apply(null, arguments);
+}
+function _objectWithoutPropertiesLoose(r, e) {
+  if (null == r) return {};
+  var t = {};
+  for (var n in r) if ({}.hasOwnProperty.call(r, n)) {
+    if (e.includes(n)) continue;
+    t[n] = r[n];
+  }
+  return t;
+}
+
+var _excluded = ["children", "style"],
+  _excluded2 = ["children", "style"];
+var tableStyles = {
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    fontSize: '12px'
+  },
+  th: {
+    border: '1px solid #000',
+    padding: '8px',
+    textAlign: 'left',
+    backgroundColor: '#f2f2f2'
+  },
+  td: {
+    border: '1px solid #000',
+    padding: '8px',
+    textAlign: 'left'
+  }
+};
+var Thead = function Thead(_ref) {
+  var children = _ref.children,
+    _ref$style = _ref.style,
+    style = _ref$style === void 0 ? {} : _ref$style,
+    props = _objectWithoutPropertiesLoose(_ref, _excluded);
+  return /*#__PURE__*/React.createElement("th", _extends({
+    style: _extends({}, tableStyles.th, style)
+  }, props), children);
+};
+var Tdata = function Tdata(_ref2) {
+  var children = _ref2.children,
+    _ref2$style = _ref2.style,
+    style = _ref2$style === void 0 ? {} : _ref2$style,
+    props = _objectWithoutPropertiesLoose(_ref2, _excluded2);
+  return /*#__PURE__*/React.createElement("td", _extends({
+    style: _extends({}, tableStyles.td, style)
+  }, props), children);
+};
+var PrintTable = function PrintTable(_ref3) {
+  var children = _ref3.children,
+    _ref3$style = _ref3.style,
+    style = _ref3$style === void 0 ? {} : _ref3$style;
+  return /*#__PURE__*/React.createElement("table", {
+    style: _extends({}, tableStyles.table, style)
+  }, children);
+};
+PrintTable.TH = Thead;
+PrintTable.TD = Tdata;
+
+export { _PrintDocument as PrintDocument, PrintTable };
 //# sourceMappingURL=index.modern.js.map
