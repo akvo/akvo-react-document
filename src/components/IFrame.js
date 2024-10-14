@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 const handleBrowsers = ['firefox'];
 
-const IFrame = ({ children }) => {
+const IFrame = ({ children, htmlID = 'ardoc-print-iframe' }) => {
   const [isBraveBrowser, setIsBraveBrowser] = useState(false);
   const [iframeBody, setIframeBody] = useState(null);
   const [ref, setRef] = useState(null);
@@ -70,7 +70,7 @@ const IFrame = ({ children }) => {
   if (handleBrowsers.includes(browser) && !isBraveBrowser) {
     return (
       <iframe
-        id="ardoc-print-iframe"
+        id={htmlID}
         title={Math.random()}
         width={0}
         height={0}
@@ -84,7 +84,7 @@ const IFrame = ({ children }) => {
 
   return (
     <iframe
-      id="ardoc-print-iframe"
+      id={htmlID}
       ref={setRef}
       title={Math.random()}
       width={0}

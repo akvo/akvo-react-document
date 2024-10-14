@@ -4,14 +4,14 @@ import { Button } from 'antd';
 import IFrame from './IFrame';
 import { todayDate } from '../lib';
 
-const PrintDocument = ({ children }) => {
+const PrintDocument = ({ children, id = 'ardoc-print-iframe' }) => {
   const [isPrint, setIsPrint] = useState(false);
 
   const onPrint = (fileName) => {
     const originalDocTitle = document.title;
     setIsPrint(true);
     setTimeout(() => {
-      const print = document.getElementById('ardoc-print-iframe');
+      const print = document.getElementById(id);
       if (print) {
         const title = fileName || `${uuidv4()}_${todayDate()}`;
         // change iframe title
@@ -53,6 +53,14 @@ const PrintDocument = ({ children }) => {
                 onPrint(); // If no custom onClick is provided, just call onPrint
               }
             },
+          });
+        }
+        if (React.isValidElement(child) && child.type === PrintDocument.Area) {
+          if (!isPrint) {
+            return null;
+          }
+          return React.cloneElement(child, {
+            htmlID: id,
           });
         }
         return child;
