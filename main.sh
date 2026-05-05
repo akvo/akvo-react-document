@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [[ "${example}" == "true" ]]; then
     cd ./example
