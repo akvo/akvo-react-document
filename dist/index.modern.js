@@ -31033,8 +31033,8 @@ var _PrintDocument = function PrintDocument(_ref) {
         loading: originLoading || isPrint,
         onClick: function onClick(event) {
           if (originalOnClick) {
-            var result = originalOnClick(function () {
-              return onPrint();
+            var result = originalOnClick(function (props) {
+              return onPrint(props);
             }, event);
             Promise.resolve(result).then(function () {
               if (!result) {
