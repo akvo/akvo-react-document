@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script is used to generate new version for nmis-mobile
+# This script is used to generate new version for akvo-react-document
 git checkout main
 git pull
 

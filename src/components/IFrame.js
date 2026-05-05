@@ -10,22 +10,27 @@ const IFrame = ({ children, htmlID = 'ardoc-print-iframe' }) => {
   const head = ref?.contentDocument?.head;
   const body = ref?.contentDocument?.body;
 
-  // create a style
-  let css = '@page {';
-  css += 'size: 210mm 297mm; margin: 15mm;';
-  css += '}';
-  css +=
-    '* { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }';
-  const style = document.createElement('style');
-  style.type = 'text/css';
-  style.media = 'print';
-  if (style.styleSheet) {
-    style.styleSheet.cssText = css;
-  } else {
-    style.appendChild(document.createTextNode(css));
-  }
+  // create a style element once (memoized with empty deps, SSR-safe)
+  const style = useMemo(() => {
+    if (typeof document === 'undefined') return null;
+    let css = '@page {';
+    css += 'size: 210mm 297mm; margin: 15mm;';
+    css += '}';
+    css +=
+      '* { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }';
+    const el = document.createElement('style');
+    el.type = 'text/css';
+    el.media = 'print';
+    if (el.styleSheet) {
+      el.styleSheet.cssText = css;
+    } else {
+      el.appendChild(document.createTextNode(css));
+    }
+    return el;
+  }, []);
 
   const browser = useMemo(() => {
+    if (typeof navigator === 'undefined') return 'No browser detection';
     const userAgent = navigator.userAgent;
     let browserName;
     if (userAgent.match(/chrome|chromium|crios/i)) {
@@ -51,7 +56,10 @@ const IFrame = ({ children, htmlID = 'ardoc-print-iframe' }) => {
 
   useEffect(() => {
     // apply page css into print content
-    if ((head && !handleBrowsers.includes(browser)) || isBraveBrowser) {
+    if (style && head && !handleBrowsers.includes(browser)) {
+      head.appendChild(style);
+    }
+    if (style && isBraveBrowser && head) {
       head.appendChild(style);
     }
   }, [head, browser, isBraveBrowser, style]);
@@ -60,7 +68,7 @@ const IFrame = ({ children, htmlID = 'ardoc-print-iframe' }) => {
     const iframe = event.target;
     if (iframe?.contentDocument) {
       const head = iframe.contentDocument.head;
-      if (head) {
+      if (head && style) {
         head.appendChild(style);
       }
       setIframeBody(iframe.contentDocument.body);
