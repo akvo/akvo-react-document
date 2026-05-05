@@ -56,10 +56,7 @@ const IFrame = ({ children, htmlID = 'ardoc-print-iframe' }) => {
 
   useEffect(() => {
     // apply page css into print content
-    if (style && head && !handleBrowsers.includes(browser)) {
-      head.appendChild(style);
-    }
-    if (style && isBraveBrowser && head) {
+    if (style && head && (!handleBrowsers.includes(browser) || isBraveBrowser)) {
       head.appendChild(style);
     }
   }, [head, browser, isBraveBrowser, style]);
