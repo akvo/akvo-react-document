@@ -4,7 +4,11 @@ import { Button } from 'antd';
 import IFrame from './IFrame';
 import { todayDate } from '../lib';
 
-const PrintDocument = ({ children, id = 'ardoc-print-iframe', delay = 2500 }) => {
+const PrintDocument = ({
+  children,
+  id = 'ardoc-print-iframe',
+  delay = 2500,
+}) => {
   const [isPrint, setIsPrint] = useState(false);
   const timerRef = useRef(null);
 

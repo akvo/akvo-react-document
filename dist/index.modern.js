@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { v4 } from 'uuid';
 import { Button } from 'antd';
 
@@ -30926,19 +30926,24 @@ var IFrame = function IFrame(_ref) {
     setRef = _useState3[1];
   var head = ref === null || ref === void 0 ? void 0 : (_ref$contentDocument = ref.contentDocument) === null || _ref$contentDocument === void 0 ? void 0 : _ref$contentDocument.head;
   var body = ref === null || ref === void 0 ? void 0 : (_ref$contentDocument2 = ref.contentDocument) === null || _ref$contentDocument2 === void 0 ? void 0 : _ref$contentDocument2.body;
-  var css = '@page {';
-  css += 'size: 210mm 297mm; margin: 15mm;';
-  css += '}';
-  css += '* { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }';
-  var style = document.createElement('style');
-  style.type = 'text/css';
-  style.media = 'print';
-  if (style.styleSheet) {
-    style.styleSheet.cssText = css;
-  } else {
-    style.appendChild(document.createTextNode(css));
-  }
+  var style = useMemo(function () {
+    if (typeof document === 'undefined') return null;
+    var css = '@page {';
+    css += 'size: 210mm 297mm; margin: 15mm;';
+    css += '}';
+    css += '* { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }';
+    var el = document.createElement('style');
+    el.type = 'text/css';
+    el.media = 'print';
+    if (el.styleSheet) {
+      el.styleSheet.cssText = css;
+    } else {
+      el.appendChild(document.createTextNode(css));
+    }
+    return el;
+  }, []);
   var browser = useMemo(function () {
+    if (typeof navigator === 'undefined') return 'No browser detection';
     var userAgent = navigator.userAgent;
     var browserName;
     if (userAgent.match(/chrome|chromium|crios/i)) {
@@ -30962,7 +30967,7 @@ var IFrame = function IFrame(_ref) {
     });
   }, []);
   useEffect(function () {
-    if (head && !handleBrowsers.includes(browser) || isBraveBrowser) {
+    if (style && head && (!handleBrowsers.includes(browser) || isBraveBrowser)) {
       head.appendChild(style);
     }
   }, [head, browser, isBraveBrowser, style]);
@@ -30970,7 +30975,7 @@ var IFrame = function IFrame(_ref) {
     var iframe = event.target;
     if (iframe !== null && iframe !== void 0 && iframe.contentDocument) {
       var _head = iframe.contentDocument.head;
-      if (_head) {
+      if (_head && style) {
         _head.appendChild(style);
       }
       setIframeBody(iframe.contentDocument.body);
@@ -30979,7 +30984,7 @@ var IFrame = function IFrame(_ref) {
   if (handleBrowsers.includes(browser) && !isBraveBrowser) {
     return /*#__PURE__*/React.createElement("iframe", {
       id: htmlID,
-      title: Math.random(),
+      title: htmlID,
       width: 0,
       height: 0,
       frameBorder: 0,
@@ -30989,7 +30994,7 @@ var IFrame = function IFrame(_ref) {
   return /*#__PURE__*/React.createElement("iframe", {
     id: htmlID,
     ref: setRef,
-    title: Math.random(),
+    title: htmlID,
     width: 0,
     height: 0,
     frameBorder: 0
@@ -31005,25 +31010,39 @@ var todayDate = function todayDate() {
 var _PrintDocument = function PrintDocument(_ref) {
   var children = _ref.children,
     _ref$id = _ref.id,
-    id = _ref$id === void 0 ? 'ardoc-print-iframe' : _ref$id;
+    id = _ref$id === void 0 ? 'ardoc-print-iframe' : _ref$id,
+    _ref$delay = _ref.delay,
+    delay = _ref$delay === void 0 ? 2500 : _ref$delay;
   var _useState = useState(false),
     isPrint = _useState[0],
     setIsPrint = _useState[1];
+  var timerRef = useRef(null);
+  useEffect(function () {
+    return function () {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
   var onPrint = function onPrint(fileName) {
     var originalDocTitle = document.title;
     setIsPrint(true);
-    setTimeout(function () {
+    timerRef.current = setTimeout(function () {
       var print = document.getElementById(id);
       if (print) {
         var title = fileName || v4() + "_" + todayDate();
-        print.contentDocument.title = title;
+        if (print.contentDocument) {
+          print.contentDocument.title = title;
+        }
         document.title = title;
         print.focus();
-        print.contentWindow.print();
+        if (print.contentWindow) {
+          print.contentWindow.print();
+        }
       }
       setIsPrint(false);
       document.title = originalDocTitle;
-    }, 2500);
+    }, delay);
   };
   return /*#__PURE__*/React.createElement("div", null, React.Children.map(children, function (child) {
     if (React.isValidElement(child) && child.type === _PrintDocument.Button) {
@@ -31033,14 +31052,9 @@ var _PrintDocument = function PrintDocument(_ref) {
         loading: originLoading || isPrint,
         onClick: function onClick(event) {
           if (originalOnClick) {
-            var result = originalOnClick(function (props) {
+            originalOnClick(function (props) {
               return onPrint(props);
             }, event);
-            Promise.resolve(result).then(function () {
-              if (!result) {
-                onPrint();
-              }
-            });
           } else {
             onPrint();
           }
