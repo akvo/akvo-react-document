@@ -6,7 +6,7 @@ import { SessionPrintPage } from '@/components';
 
 const ExamplePrintAsync = () => {
   const [loading, setLoading] = useState(false);
-  const [patSession, setPatSession] = useState(null);
+  const [patSession, setPatSession] = useState({});
 
   const onPrintApi = async (onPrint) => {
     setLoading(true);

@@ -64,7 +64,7 @@ const ExamplePrintText = () => {
                   </tr>
                   <tr>
                     <PrintTable.TD>2</PrintTable.TD>
-                    <PrintTable.TD>Jane SmiPrintTable.TH</PrintTable.TD>
+                    <PrintTable.TD>Jane Smith</PrintTable.TD>
                     <PrintTable.TD>34</PrintTable.TD>
                     <PrintTable.TD>Los Angeles</PrintTable.TD>
                   </tr>

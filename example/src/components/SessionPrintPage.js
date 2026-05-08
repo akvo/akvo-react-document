@@ -112,7 +112,7 @@ const SessionPrintPage = ({
         </tbody>
       </PrintTable>
       <p>
-        {`On the following decisions there was no agreement on the way partner organizations PO) are/have been involved in the decision-making process.`}
+        {`On the following decisions there was no agreement on the way partner organizations (PO) are/have been involved in the decision-making process.`}
       </p>
       <PrintTable>
         <thead>

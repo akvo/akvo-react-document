@@ -1,29 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'antd';
 import IFrame from './IFrame';
 import { todayDate } from '../lib';
 
-const PrintDocument = ({ children, id = 'ardoc-print-iframe' }) => {
+const PrintDocument = ({ children, id = 'ardoc-print-iframe', delay = 2500 }) => {
   const [isPrint, setIsPrint] = useState(false);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   const onPrint = (fileName) => {
     const originalDocTitle = document.title;
     setIsPrint(true);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       const print = document.getElementById(id);
       if (print) {
         const title = fileName || `${uuidv4()}_${todayDate()}`;
         // change iframe title
-        print.contentDocument.title = title;
+        if (print.contentDocument) {
+          print.contentDocument.title = title;
+        }
         // change document title
         document.title = title;
         print.focus();
-        print.contentWindow.print();
+        if (print.contentWindow) {
+          print.contentWindow.print();
+        }
       }
       setIsPrint(false);
       document.title = originalDocTitle;
-    }, 2500);
+    }, delay);
   };
 
   return (
@@ -40,20 +53,10 @@ const PrintDocument = ({ children, id = 'ardoc-print-iframe' }) => {
             loading: originLoading || isPrint,
             onClick: (event) => {
               if (originalOnClick) {
-                // Ensure compatibility with both sync and async functions
-                const result = originalOnClick(
-                  (props) => onPrint(props),
-                  event
-                );
-
-                // If the original function is asynchronous, wait for it
-                Promise.resolve(result).then(() => {
-                  if (!result) {
-                    onPrint(); // Call onPrint if original function doesn't handle it
-                  }
-                });
+                // Pass onPrint as first argument; handler is responsible for calling it
+                originalOnClick((props) => onPrint(props), event);
               } else {
-                onPrint(); // If no custom onClick is provided, just call onPrint
+                onPrint();
               }
             },
           });

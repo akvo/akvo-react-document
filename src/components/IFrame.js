@@ -76,7 +76,7 @@ const IFrame = ({ children, htmlID = 'ardoc-print-iframe' }) => {
     return (
       <iframe
         id={htmlID}
-        title={Math.random()}
+        title={htmlID}
         width={0}
         height={0}
         frameBorder={0}
@@ -91,7 +91,7 @@ const IFrame = ({ children, htmlID = 'ardoc-print-iframe' }) => {
     <iframe
       id={htmlID}
       ref={setRef}
-      title={Math.random()}
+      title={htmlID}
       width={0}
       height={0}
       frameBorder={0}
